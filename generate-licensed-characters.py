@@ -57,30 +57,31 @@ def generate_licensedcharacters_html():
                 first_letter = get_first_letter(row['LicensedCharacterName'])
                 letter_groups[first_letter].append(row)
     
+    # We'll show cards for all letters A-Z and #
+    all_letters = ['#'] + list('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+    
     html = ['''<div class="container">
     <!-- Masonry Grid -->
     <div class="row" id="masonry-grid">''']
     
-    letters = sorted(letter_groups.keys())
-    if '#' in letters:
-        letters.remove('#')
-        letters.insert(0, '#')
-        
-    for letter in letters:
-        # Match exact format from base copy.html
-        html.append(f'''        <!-- Example Card -->
+    for letter in all_letters:
+        html.append(f'''        <!-- Card for letter {letter} -->
         <div class="col-xs-12 col-sm-6 col-md-3 masonry-item" id="{letter}">
             <h4>{letter}</h4>
             <div class="items-container">''')
         
-        licensedcharacters_in_group = sorted(letter_groups[letter], key=lambda x: x['LicensedCharacterName'])
-        for licensedcharacter in licensedcharacters_in_group:
-            licensed_character_slug = slugify(licensedcharacter['LicensedCharacterName'])
-            final_url = build_url(licensedcharacter['URL'], licensed_character_slug)
-            class_attr = f'item {licensed_character_slug}' if licensedcharacter.get('Popular-License-Rating') else 'item'
-            
-            html.append(f'''                <a href="{final_url}"
+        licensedcharacters_in_group = sorted(letter_groups.get(letter, []), key=lambda x: x['LicensedCharacterName'])
+        
+        if licensedcharacters_in_group:
+            for licensedcharacter in licensedcharacters_in_group:
+                licensed_character_slug = slugify(licensedcharacter['LicensedCharacterName'])
+                final_url = build_url(licensedcharacter['URL'], licensed_character_slug)
+                class_attr = f'item {licensed_character_slug}' if licensedcharacter.get('Popular-License-Rating') else 'item'
+                
+                html.append(f'''                <a href="{final_url}"
                     class="{class_attr}">{licensedcharacter['LicensedCharacterName']}</a>''')
+        else:
+            html.append(f'''                <a href="#" class="item" style="text-align: center;">No entries for {letter}</a>''')
         
         html.append('''            </div>
         </div>''')
