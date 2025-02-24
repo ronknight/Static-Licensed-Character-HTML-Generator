@@ -15,8 +15,8 @@ def generate_popular_html():
     with open('LicensedCharacterList.csv', 'r') as f:
         reader = csv.DictReader(f)
         for row in reader:
-            # Only include licensedcharacters that have a Popular-License-Rating and are Active
-            if row['Popular-License-Rating'] and row['Active'].upper() == 'TRUE':
+            # Only include licensedcharacters that have a Popular-License-Rating > 0 and are Active
+            if row['Popular-License-Rating'] and row['Active'].upper() == 'TRUE' and int(row['Popular-License-Rating']) > 0:
                 licensedcharacters.append(row)
     
     licensedcharacters.sort(key=lambda x: int(x['Popular-License-Rating']))
@@ -32,7 +32,9 @@ def generate_popular_html():
             if logo.startswith("http"):
                 logo_url = logo
             else:
-                logo_url = f"https://www.4sgm.com/assets/Image/Category/{logo}"
+                default_image_path = "https://www.4sgm.com/assets/Image/Category/"
+                image_url = licensedcharacter.get('Image_url', default_image_path)
+                logo_url = f"{image_url}{logo}"
             html.append(f'''    <a href="{final_url}">
     <img src="{logo_url}" alt="Wholesale {licensedcharacter['LicensedCharacterName']}" class="licensed-characters-logo">
 </a>''')
