@@ -32,11 +32,11 @@ def generate_popular_html():
             if logo.startswith("http"):
                 logo_url = logo
             else:
-                default_image_path = "https://www.4sgm.com/assets/Image/Category/"
-                image_url = licensedcharacter.get('Image_url', default_image_path)
+                image_url = licensedcharacter.get('Image_URL', '').strip()
                 logo_url = f"{image_url}{logo}"
             html.append(f'''    <a href="{final_url}">
     <img src="{logo_url}" alt="Wholesale {licensedcharacter['LicensedCharacterName']}" class="licensed-characters-logo">
+    <p class="licensed-character-name">{licensedcharacter['LicensedCharacterName']}</p>
 </a>''')
         else:
             html.append(f'''    <a href="{final_url}">
